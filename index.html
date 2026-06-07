@@ -10,9 +10,11 @@
   URL params (all optional, URL-encoded):
     n=first name · co=company · ev=event name · dt=date (display)
     code=Fresh Forward code · exp=valid-through (display)
+    gal=event photo gallery URL (Event Photo Library)
     book=booking/redeem URL · rev=Google review URL · src=nfc|qr|email
 
-  Bare URL (no params) renders a clean generic thank-you.
+  Bare URL (no params) renders a clean generic thank-you; the photos
+  section only appears when gal= is present.
 ============================================================ -->
 <html lang="en">
 <head>
@@ -139,8 +141,18 @@
 
   <p class="eyebrow">YOUR POST-EVENT RESET</p>
   <h1><span id="hlead">This one's </span><span class="accent">for you</span></h1>
-  <p class="sub">You spent the day helping everyone else breathe easier. Your Fresh Forward gift is below — along with a minute just to exhale.</p>
+  <p class="sub">You spent the day helping everyone else breathe easier. Your event photos and Fresh Forward gift are below — along with a minute just to exhale.</p>
   <div class="eventline" id="eventline" style="display:none"></div>
+
+  <!-- ================= EVENT PHOTOS ================= -->
+  <div class="section" id="photos" style="display:none">
+    <div class="rule"></div>
+    <h2>Your <span class="accent">event photos</span></h2>
+    <p>Every shot your guests took at the oxygen bar — yours to keep, download, and share with your whole team.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" id="photosbtn" href="#">View &amp; Download Photos</a>
+    </div>
+  </div>
 
   <!-- ================= GIFT ================= -->
   <div class="section" id="gift">
@@ -225,6 +237,7 @@
   var g = function (k) { var v = p.get(k); return v ? v.trim() : ""; };
   var setText = function (id, val) { var el = document.getElementById(id); if (el) el.textContent = val; };
   var setHref = function (id, val) { var el = document.getElementById(id); if (el && val) el.setAttribute("href", val); };
+  var show = function (id) { var el = document.getElementById(id); if (el) el.style.display = ""; };
 
   var name    = g("n");
   var company = g("co");
@@ -232,6 +245,7 @@
   var dateStr = g("dt");
   var code    = g("code");
   var expires = g("exp");
+  var gallery = g("gal");
   var bookUrl = g("book") || "https://oxygenbar360.com";
   var revUrl  = g("rev")  || "https://g.page/r/Cao0DpCkO1JKEAE/review";
 
@@ -248,9 +262,14 @@
   if (lead) parts.push(lead);
   if (dateStr) parts.push(dateStr);
   if (parts.length) {
-    var el = document.getElementById("eventline");
-    el.textContent = parts.join(" · ");
-    el.style.display = "";
+    setText("eventline", parts.join(" · "));
+    show("eventline");
+  }
+
+  // event photos — only when a gallery link is supplied
+  if (gallery) {
+    setHref("photosbtn", gallery);
+    show("photos");
   }
 
   // gift card
